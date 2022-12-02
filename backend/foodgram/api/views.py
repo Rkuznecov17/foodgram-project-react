@@ -24,12 +24,12 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     filter_backends = (IngredientFilter,)
-    search_fields = ('name',)
+    search_fields = ('^name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
-    queryset = Recipe.objects.order_by('id')
+    queryset = Recipe.objects.select_related('author').order_by('-id')
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     permission_classes = [IsAuthorReadOnly]
@@ -44,12 +44,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def for_responses(self, request, obj, id):
         item = obj.objects.filter(user=request.user, recipe__id=id)
-        if (request.method == 'POST') and (not item.exists()):
+        if request.method == 'POST' and not item.exists():
             recipe = get_object_or_404(Recipe, id=id)
             obj.objects.create(user=request.user, recipe=recipe)
             serializer = RecipeCreateSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        elif (request.method == 'DELETE') and (item.exists()):
+        elif request.method == 'DELETE' and item.exists():
             item.delete()
             return Response(
                 {'success': 'Рецепт успешно удален.'},
