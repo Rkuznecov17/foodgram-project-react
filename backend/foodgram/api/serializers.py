@@ -2,7 +2,7 @@ from drf_extra_fields.fields import Base64ImageField
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient, 
                             ShoppingCart, Tag)
 from users.serializers import UserSerializer
 
@@ -25,6 +25,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit')
 
+ 
     class Meta:
         model = RecipeIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
@@ -35,10 +36,12 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     ingredients = RecipeIngredientSerializer(
         many=True, source='recipes_ingredients'
+
     )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField()
+
 
     class Meta:
         model = Recipe
@@ -46,7 +49,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'is_favorited', 'is_in_shopping_cart',
                   'name', 'image', 'text', 'cooking_time')
         read_only_fields = ('author',)
-    
+
     def favorite_or_in_shopping_cart(self, value, obj):
         user = self.context.get('request').user
         if user.is_authenticated:
@@ -68,13 +71,14 @@ class IngredoentForRecipeSerializer(serializers.ModelSerializer):
         model = RecipeIngredient
         fields = ['id', 'amount']
 
-
+ 
 class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = IngredoentForRecipeSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(many=True,
                                               queryset=Tag.objects.all())
     author = UserSerializer(read_only=True)
     image = Base64ImageField()
+
 
     class Meta:
         model = Recipe
@@ -84,7 +88,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'cooking_time': {'required': True}
         }
-
+ 
     def validate_ingredients(self, ingredients):
         if not ingredients:
             raise serializers.ValidationError('Добавьте ингредиенты.')
@@ -95,7 +99,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Ингридиенты повторяются.')
             unique_check.append(ingredient_id)
-        return ingredients
+        return ingredients 
 
     def adding_ingredients(self, ingredients, recipe):
         all_ingredients = []
