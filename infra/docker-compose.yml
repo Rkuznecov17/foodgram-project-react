@@ -9,7 +9,7 @@ services:
       - ./.env
 
   web:
-    image: Rkuznecov17/foodgram_project:v2_1
+    image: Rkuznecov17/foodgram_project:latest
     restart: always
     volumes:
       - backend_static:/app/backend_static/
