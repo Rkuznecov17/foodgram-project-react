@@ -132,7 +132,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
                 message='Вы уже подписаны на автора.'
             )
         ]
-    
+
     def validate(self, data):
         author = self.instance
         user = self.context.get('request').user
@@ -146,13 +146,13 @@ class SubscribeSerializer(serializers.ModelSerializer):
                 code=status.HTTP_400_BAD_REQUEST,
             )
         return data
-    
+
     def get_is_subscribed(self, user):
         current_user = self.context['request'].user
         return (
             current_user.is_authenticated
-            and Subscribe.objects.filter(user=current_user, author=user).exists()
-        )
+            and Subscribe.objects.filter(user=current_user,
+                                         author=user).exists())
 
     def get_recipes(self, user):
         request = self.context.get('request')

@@ -40,7 +40,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             user_id=user.id,
             **{outerref: OuterRef('pk')},
         ))}
-    
+
     def get_queryset(self):
         user = self.request.user
         subquery_favorite = self.get_exists_subquery(
@@ -129,6 +129,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer = MinInfoRecipeSerializer()
             return Response(serializer.to_representation(instance=recipe),
                             status=status.HTTP_201_CREATED)
-        shopping_cart = get_object_or_404(ShoppingCart, user=user, recipe__id=pk)
+        shopping_cart = get_object_or_404(ShoppingCart,
+                                          user=user, recipe__id=pk)
         shopping_cart.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
