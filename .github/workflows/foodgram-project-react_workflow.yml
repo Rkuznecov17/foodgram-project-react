@@ -44,7 +44,6 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_project:v2_1
-
   deploy:
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
