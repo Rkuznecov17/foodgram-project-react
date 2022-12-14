@@ -62,7 +62,6 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             sudo docker-compose stop
-            sudo docker-compose rm backend
             sudo docker-compose rm web
             sudo docker-compose pull ${{ secrets.DOCKER_USERNAME }}/foodgram_project:v2_1
             sudo docker-compose pull ${{ secrets.DOCKER_USERNAME }}/foodgram_project_frontend:v1
