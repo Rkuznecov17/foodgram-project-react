@@ -15,7 +15,21 @@ Foodgram, «Продуктовый помощник» - онлайн-серви�
 * Docker 20.10
 * Nginx 1.18
 
-## Запуск проекта:
+## Шаблон наполнения env-файла
+
+### Создайте файл окружения <./backend/.env> с параметрами:
+
+```
+DB_ENGINE=django.db.backends.postgresql # указываем, что работаем с postgresql
+DB_NAME=postgres # имя базы данных
+POSTGRES_USER=postgres # логин для подключения к базе данных
+POSTGRES_PASSWORD=postgres # пароль для подключения к БД (установите свой)
+DB_HOST=db # название сервиса (контейнера)
+DB_PORT=5432 # порт для подключения к БД
+SECRET_KEY=<Django SECRET_KEY>
+```
+
+## Запуск проекта
 
 ### Клонировать репозиторий и перейти в него в командной строке:
 
@@ -24,36 +38,43 @@ git@github.com:Rkuznecov17/foodgram-project-react.git
 cd foodgram-project-react/backend/foodgram
 ```
 
-### Перейти в директорию infra/ и запустить docker-compose:
+### Перейти в директорию infra/ и собрать docker-compose:
 
 ```python
 cd infra/
+sudo docker-compose up -d --build
+```
+
+### Запустить docker-compose:
+
+```python
 docker-compose up
 ```
 
-### Cоздать и активировать виртуальное окружение:
+## Применить миграции:
 
 ```python
-python -m venv venv
-source venv/scripts/activate
+docker-compose exec web python manage.py makemigrations
+docker-compose exec web python manage.py migrate
 ```
 
-### Установить зависимости из файла requirements.txt:
+### Создать суперпользователя:
 
 ```python
-pip install -r requirements.txt
+docker-compose exec web python manage.py createsuperuser
 ```
 
-### Выполнить миграции:
+### Cобрать статические файлы::
 
 ```python
-python manage.py migrate
+docker-compose exec web python manage.py collectstatic --no-input
 ```
 
-## Примеры
+### Заполнение базы данными:
 
-Подробная документация API с примерами размещена по адресу:
-http://127.0.0.1:8000/redoc/
+```python
+docker-compose exec web python manage.py import_ingredients
+```
 
 ## Автор
 
