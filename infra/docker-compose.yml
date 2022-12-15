@@ -44,4 +44,3 @@ volumes:
   db:
   backend_static:
   media_value:
-  
