@@ -35,7 +35,7 @@ class RecipeFilter(FilterSet):
 # class IngredientFilter(SearchFilter):
 #     search_param = 'name'
 
-class IngredientFilter(filter.FilterSet):
+class IngredientFilter(FilterSet):
     name = filter.CharFilter(lookup_expr='istartswith')
 
     class Meta:
