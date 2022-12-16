@@ -8,7 +8,7 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import IngredientFilter, RecipeFilter
-from .permissions import IsAuthorReadOnly
+from .permissions import IsAdminOrReadOnly, IsAuthorReadOnly
 from .serializers import (IngredientSerializer, MinInfoRecipeSerializer,
                           RecipeCreateSerializer, RecipeSerializer,
                           TagSerializer)
@@ -19,6 +19,8 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
 
 
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
