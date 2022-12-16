@@ -1,5 +1,4 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Exists, OuterRef
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
@@ -34,30 +33,11 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    # serializer_class = RecipeSerializer
     queryset = Recipe.objects.select_related('author').order_by('-id')
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    permission_classes = [IsAuthorReadOnly]
+    permission_classes = (IsAuthorReadOnly,)
     pagination_class = RecipesPagination
-
-    def get_exists_subquery(self, model, user, field, outerref):
-        return {field: Exists(model.objects.filter(
-            user_id=user.id,
-            **{outerref: OuterRef('pk')},
-        ))}
-
-    def get_queryset(self):
-        user = self.request.user
-        subquery_favorite = self.get_exists_subquery(
-            Favorite, user, 'is_favorited', 'recipe'
-        )
-        subquery_shoppingcart = self.get_exists_subquery(
-            ShoppingCart, user, 'is_in_shopping_cart', 'recipe'
-        )
-        subquery = subquery_favorite.copy()
-        subquery.update(subquery_shoppingcart)
-        return Recipe.objects.annotate(**subquery)
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
