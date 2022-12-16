@@ -1,7 +1,7 @@
 from django_filters.rest_framework import FilterSet, filters
 from rest_framework.filters import SearchFilter
 
-from recipes.models import Recipe, Tag
+from recipes.models import Ingredient, Recipe, Tag
 from users.models import User
 
 
@@ -32,5 +32,12 @@ class RecipeFilter(FilterSet):
         return queryset
 
 
-class IngredientFilter(SearchFilter):
-    search_param = 'name'
+# class IngredientFilter(SearchFilter):
+#     search_param = 'name'
+
+class IngredientFilter(filter.FilterSet):
+    name = filter.CharFilter(lookup_expr='istartswith')
+
+    class Meta:
+        model = Ingredient
+        fields = ('name',)

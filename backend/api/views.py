@@ -8,6 +8,7 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import IngredientFilter, RecipeFilter
+from .paginations import RecipesPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorReadOnly
 from .serializers import (IngredientSerializer, MinInfoRecipeSerializer,
                           RecipeCreateSerializer, RecipeSerializer,
@@ -26,16 +27,19 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (IngredientFilter,)
+    pagination_class = None
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = [IngredientFilter]
     search_fields = ('^name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    serializer_class = RecipeSerializer
+    # serializer_class = RecipeSerializer
     queryset = Recipe.objects.select_related('author').order_by('-id')
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     permission_classes = [IsAuthorReadOnly]
+    pagination_class = RecipesPagination
 
     def get_exists_subquery(self, model, user, field, outerref):
         return {field: Exists(model.objects.filter(
