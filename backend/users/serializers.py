@@ -105,7 +105,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
         return Subscribe.objects.filter(
-            author=obj.autho,
+            author=obj.author,
             user=request.user
         ).exists()
 
