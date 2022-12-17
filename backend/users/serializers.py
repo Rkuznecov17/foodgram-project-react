@@ -103,8 +103,9 @@ class SubscribeSerializer(serializers.ModelSerializer):
         )
 
     def get_is_subscribed(self, obj):
+        current_user = self.context.get('request').user
         return Subscribe.objects.filter(
-            user=obj.user,
+            user=current_user,
             author=obj.author
         ).exists()
 
