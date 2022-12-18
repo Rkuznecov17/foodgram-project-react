@@ -97,7 +97,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
-            'is_subscribed',
+            #'is_subscribed',
             'recipes',
             'recipes_count'
         )
