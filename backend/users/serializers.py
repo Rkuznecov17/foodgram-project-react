@@ -64,20 +64,6 @@ class AuthorRecipesSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def validate(self, data):
-        if data['user'] == data['author']:
-            raise serializers.ValidationError(
-                'Нельзя подписаться на самого себя'
-            )
-        return data
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        return SubscribeSerializer(
-            instance.author,
-            context={'request': request}
-        ).data
-
 
 class SubscribeSerializer(serializers.ModelSerializer):
     email = serializers.ReadOnlyField(source='author.email')
@@ -85,7 +71,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='author.username')
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
-    #is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
@@ -97,17 +83,16 @@ class SubscribeSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
-            #'is_subscribed',
+            'is_subscribed',
             'recipes',
             'recipes_count'
         )
 
-        #def get_is_subscribed(self, obj):
-            #request = self.context['request']
-            #return Subscribe.objects.filter(
-                #author=obj,
-                #user=request.user
-            #).exists()
+    def get_is_subscribed(self, obj):
+        return Subscribe.objects.filter(
+            user=obj.user,
+            author=obj.author
+        ).exists()
 
     def get_recipes(self, obj):
         queryset = Recipe.objects.filter(author=obj.author).order_by('-id')
