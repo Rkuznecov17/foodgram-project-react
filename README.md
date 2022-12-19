@@ -80,4 +80,4 @@ docker-compose exec web python manage.py import_ingredients
 
 Студент 38 когорты Факультета Бэкэнд-разработки, Яндекс.Практикум:
 
-* Федченко Роман
+* Федченко Рома
